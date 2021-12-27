@@ -3,7 +3,7 @@ import sys
 
 from flask import Flask, jsonify, request, abort, send_file
 from dotenv import load_dotenv
-from linebot import LineBotApi, WebhookParser
+from linebot import LineBotApi, WebhookParser, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
@@ -78,6 +78,13 @@ def callback():
 
     return "OK"
 
+# 學你說話
+@handler.add(MessageEvent, message=TextMessage)
+def echo(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=event.message.text)
+    )
 
 @app.route("/webhook", methods=["POST"])
 def webhook_handler():
