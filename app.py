@@ -5,7 +5,9 @@ from flask import Flask, jsonify, request, abort, send_file
 from dotenv import load_dotenv
 from linebot import LineBotApi, WebhookParser, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
+                            TemplateSendMessage, ButtonsTemplate, MessageTemplateAction,
+                            PostbackAction, MessageAction, URIAction)
 
 from fsm import TocMachine
 from utils import send_text_message
@@ -84,7 +86,30 @@ handler = WebhookHandler(channel_secret)
 def echo(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=event.message.text)
+        # TextSendMessage(text=event.message.text)
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                thumbnail_image_url='https://example.com/image.jpg',
+                title='Menu',
+                text='Please select',
+                actions=[
+                    PostbackAction(
+                        label='postback',
+                        display_text='postback text',
+                        data='action=buy&itemid=1'
+                    ),
+                    MessageAction(
+                        label='message',
+                        text='message text'
+                    ),
+                    URIAction(
+                        label='uri',
+                        uri='http://example.com/'
+                    )
+                ]
+            )
+        )
     )
 
 @app.route("/webhook", methods=["POST"])
