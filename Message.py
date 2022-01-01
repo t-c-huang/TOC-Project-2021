@@ -74,3 +74,30 @@ def mothers_grandparent(line_bot_api, event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=text))
+    
+def show_income(line_bot_api, event, income_record):
+    text = f"收入 NTD {sum(income_record.values())}\n\
+            （傳送任意鍵回選單）"
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=text))
+
+def show_expense(line_bot_api, event, expense_record):
+    text = f"支出 NTD {sum(expense_record.values())}\n\
+            （傳送任意鍵回選單）"
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=text))
+    
+def show_state_money(line_bot_api, event, income_record, expense_record, state):
+    text = f"{state}\n\
+            收入 NTD {income_record[state]}\n\
+            支出 NTD {expense_record[state]}\n\
+            輸入 +NUMBER 新增收入\n\
+            輸入 -NUMBER 新增支出\n\
+            輸入 q 回到主選單"
+    line_bot_api.push_message(
+        event.source.user_id,
+        TextSendMessage(text=text))
+    print(income_record)
+    print(expense_record)

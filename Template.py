@@ -20,13 +20,13 @@ def menu(line_bot_api, event):
                     #     data='action=buy&itemid=1'
                     # ),
                     MessageAction(
-                        label='親戚稱謂查詢',
-                        text='親戚稱謂查詢'
+                        label='親戚稱謂查詢&紅包紀錄',
+                        text='親戚稱謂查詢&紅包紀錄'
                     ),
-                    # MessageAction(
-                    #     label='紅包規劃',
-                    #     text='紅包規劃'
-                    # ),
+                    MessageAction(
+                        label='紅包規劃',
+                        text='紅包規劃'
+                    ),
                     # MessageAction(
                     #     label='新年訊息',
                     #     text='新年訊息'
@@ -40,6 +40,35 @@ def menu(line_bot_api, event):
         )
     )
     
+def money(line_bot_api, event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                title='紅包規劃',
+                text='Please select',
+                actions=[
+                    MessageAction(
+                        label='紅包收入',
+                        text='紅包收入'
+                    ),
+                    MessageAction(
+                        label='紅包支出',
+                        text='紅包支出'
+                    ),
+                    MessageAction(
+                        label='查看收入',
+                        text='查看收入'
+                    ),
+                    MessageAction(
+                        label='查看支出',
+                        text='查看支出'
+                    ),
+                ]
+            )
+        )
+    )
 
 def relation(line_bot_api, event):
     line_bot_api.reply_message(

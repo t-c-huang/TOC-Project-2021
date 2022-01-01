@@ -13,99 +13,21 @@ from fsm import TocMachine
 from utils import send_text_message
 import Template as tpl
 import Message as Msg
+import state_and_transition as sat
 
 load_dotenv()
-state_system = ["begin", "menu", "relation"]
 
-#   father's family
-state_fathers_family = ["父親","父親的父母", "父親的兄弟姊妹", "父親的姪男/女、甥男/女", "父親的祖父母、外祖父母"]
-                        #["父親", "祖父/祖母（爺爺/奶奶）", "叔父(叔母)/伯父(伯母)", "姑姑(姑父)", "堂兄弟姊妹", "(姑)表兄弟姊妹",
-                        #"曾祖父/曾祖母", "曾外祖父/曾外祖母", "兄弟姐妹", "姪男/女 or 甥男/女", "祖父母 or 外祖父母"]
-transition_fathers_family = [
-        {"trigger": "fathers_family","source": "relation","dest": "父親"},
-        {"trigger": "fathers_parent","source": "父親","dest": "父親的父母"},
-        {"trigger": "fathers_sibling","source": "父親","dest": "父親的兄弟姊妹"},
-        {"trigger": "fathers_nephew","source": "父親","dest": "父親的姪男/女、甥男/女"},
-        {"trigger": "fathers_grandparent","source": "父親","dest": "父親的祖父母、外祖父母"},
-        {"trigger": "go_menu","source": state_fathers_family,"dest": "menu"},
-        # {"trigger": "父母","source": "爸爸","dest": "祖父/祖母（爺爺/奶奶）"},
-        # {"trigger": "兄弟","source": "爸爸","dest": "叔父(叔母)/伯父(伯母)"},
-        # {"trigger": "姐妹","source": "爸爸","dest": "姑姑(姑父)"},
-        # {"trigger": "姪男姪女","source": "爸爸","dest": "堂兄弟姊妹"},
-        # {"trigger": "甥男甥女","source": "爸爸","dest": "(姑)表兄弟姊妹"},
-        # {"trigger": "祖父母","source": "爸爸","dest": "曾祖父/曾祖母"},
-        # {"trigger": "外祖父母","source": "爸爸","dest": "曾外祖父/曾外祖母"},
-        # {"trigger": "兒女","source": "叔父(叔母)/伯父(伯母)","dest": "堂兄弟姊妹"},
-        # {"trigger": "兒女","source": "姑姑(姑父)","dest": "(姑)表兄弟姊妹"}, 
-]
-
-#   mother's family
-state_mothers_family = ["母親", "母親的父母", "母親的兄弟姊妹", "母親的姪男/女、甥男/女", "母親的祖父母、外祖父母"]
-                        #["媽媽", "外祖父/外祖母（外公/外婆）", "舅父（舅母）", "姨母（姨父）", "(舅)表兄弟姊妹",
-                        #"姨兄弟姊妹", "外曾祖父/外曾祖母","外曾外祖父/外曾外祖母"]
-transition_mothers_family = [
-    {"trigger": "mothers_family","source": "relation","dest": "母親"},
-    {"trigger": "mothers_parent","source": "母親","dest": "母親的父母"},
-    {"trigger": "mothers_sibling","source": "母親","dest": "母親的兄弟姊妹"},
-    {"trigger": "mothers_nephew","source": "母親","dest": "母親的姪男/女、甥男/女"},
-    {"trigger": "mothers_grandparent","source": "母親","dest": "母親的祖父母、外祖父母"},
-    {"trigger": "go_menu","source": state_mothers_family,"dest": "menu"},
-    # {"trigger": "父母","source": "媽媽","dest": "外祖父/外祖母（外公/外婆）"},
-    # {"trigger": "兄弟","source": "媽媽","dest": "舅父（舅母）"},
-    # {"trigger": "姐妹","source": "媽媽","dest": "姨母（姨父）"},
-    # {"trigger": "姪男姪女","source": "媽媽","dest": "(舅)表兄弟姊妹"},
-    # {"trigger": "甥男甥女","source": "媽媽","dest": "姨兄弟姊妹"},
-    # {"trigger": "祖父母","source": "媽媽","dest": "外曾祖父/外曾祖母"},
-    # {"trigger": "外祖父母","source": "媽媽","dest": "外曾外祖父/外曾外祖母"},
-    # {"trigger": "兒女","source": "舅父（舅母）","dest": "(舅)表兄弟姊妹"},
-    # {"trigger": "兒女","source": "姨母（姨父）","dest": "姨兄弟姊妹"},
-]
-
-#   son's family
-# state_sons_family = ["兒子", "媳婦", "孫子/孫女", "孫媳婦", "孫女婿",
-#                      "曾孫/曾孫女", "親家公/親家母"]
-# transition_sons_family = [
-#     {"trigger": "sons_family","source": "relation","dest": "兒子"},
-#     {"trigger": "妻子","source": "兒子","dest": "媳婦"},
-#     {"trigger": "兒女","source": "兒子","dest": "孫子/孫女"},
-#     {"trigger": "兒婦","source": "兒子","dest": "孫媳婦"},
-#     {"trigger": "兒婿","source": "兒子","dest": "孫女婿"},
-#     {"trigger": "兒子孫","source": "兒子","dest": "曾孫/曾孫女"},
-#     {"trigger": "配偶父母","source": "兒子","dest": "親家公/親家母"}, 
-#     {"trigger": "父母","source": "媳婦","dest": "親家公/親家母"}, 
-    
-# ]
-
-# #   daughter's family
-# state_daughters_family = ["女兒", "媳婦", "外孫/外孫女", "外孫媳婦", "外孫女婿",
-#                          "外曾孫/外曾孫女", "親家公/親家母"]
-# transition_daughters_family = [
-#     {"trigger": "daughts_family","source": "relation","dest": "女兒"},
-#     {"trigger": "丈夫","source": "女兒","dest": "女婿"},
-#     {"trigger": "兒女","source": "女兒","dest": "外孫/外孫女"},
-#     {"trigger": "兒婦","source": "女兒","dest": "外孫媳婦"},
-#     {"trigger": "兒婿","source": "女兒","dest": "外孫女婿"},
-#     {"trigger": "兒女孫","source": "女兒","dest": "外曾孫/外曾孫女"},
-#     {"trigger": "配偶父母","source": "女兒","dest": "親家公/親家母"},
-#     {"trigger": "父母","source": "女婿","dest": "親家公/親家母"}, 
-# ]
-
-transition_system = [
-    {"trigger": "go_menu","source": "begin","dest": "menu"},
-    {"trigger": "go_relation","source": "menu","dest": "relation"},
-    # {"trigger": "back","source": state_fathers_family,"dest": "relation"},
-    # {"trigger": "back","source": state_mothers_family,"dest": "relation"},
-    # {"trigger": "back","source": state_sons_family,"dest": "relation"},
-    # {"trigger": "back","source": state_daughters_family,"dest": "relation"},
-]
-# main_functions = ["relation", "card", "red_envlope"]
 machine = TocMachine(
-    states=state_system + state_fathers_family + state_mothers_family,# + state_sons_family + state_daughters_family,
-    transitions=transition_system + transition_fathers_family + transition_mothers_family, # + transition_sons_family+ transition_daughters_family,
+    states=sat.state_system + sat.state_fathers_family + sat.state_mothers_family,# + state_sons_family + state_daughters_family,
+    transitions=sat.transition_system + sat.transition_fathers_family + sat.transition_mothers_family, # + transition_sons_family+ transition_daughters_family,
     initial="begin",
     auto_transitions=False,
     show_conditions=True,
 )
+
+income_record = dict.fromkeys(sat.state_fathers_family + sat.state_mothers_family, 10)
+expense_record = dict.fromkeys(sat.state_fathers_family + sat.state_mothers_family, 10)
+
 
 app = Flask(__name__, static_url_path="")
 
@@ -155,8 +77,6 @@ def callback():
 
     # return "OK"
 
-# 學你說話
-
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg = event.message.text
@@ -166,9 +86,23 @@ def handle_message(event):
         tpl.menu(line_bot_api, event)
     
     elif machine.state == "menu":
-        if msg == "親戚稱謂查詢":
+        if msg == "親戚稱謂查詢&紅包紀錄":
             machine.go_relation()
-            tpl.relation(line_bot_api, event)  
+            tpl.relation(line_bot_api, event)
+        if msg == "紅包規劃":
+            machine.go_money()
+            tpl.money(line_bot_api, event)
+    
+    elif machine.state == "money":
+        if msg == "紅包收入":
+            Msg.show_income(line_bot_api, event, income_record)
+            print(income_record)
+        elif msg == "紅包支出":
+            Msg.show_expense(line_bot_api, event, expense_record)
+            print(expense_record)
+        # elif msg == "查看收入"
+        # elif msg == "查看支出”
+           
         
     elif machine.state == "relation":
         if msg == "爸爸的":
@@ -187,55 +121,143 @@ def handle_message(event):
         if msg == "父母":
             machine.fathers_parent()
             Msg.fathers_patrent(line_bot_api, event)
+            Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
         elif msg == "兄弟姐妹":
             machine.fathers_sibling()
             Msg.fathers_sibling(line_bot_api, event)
+            Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
             #tpl.fathers_family_L2(line_bot_api, event)
         elif msg == "姪男/女 or 甥男/女":
             machine.fathers_nephew()
             Msg.fathers_nephew(line_bot_api, event)
+            Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
         elif msg == "祖父母 or 外祖父母":
             machine.fathers_grandparent()
             Msg.fathers_grandparent(line_bot_api, event)
+            Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
     
     elif machine.state == "母親":
         if msg == "父母":
             machine.mothers_parent()
             Msg.mothers_patrent(line_bot_api, event)
+            Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
         elif msg == "兄弟姐妹":
             machine.mothers_sibling()
             Msg.mothers_sibling(line_bot_api, event)
+            Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
             #tpl.mothers_family_L2(line_bot_api, event)
         elif msg == "姪男/女 or 甥男/女":
             machine.mothers_nephew()
             Msg.mothers_nephew(line_bot_api, event)
+            Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
         elif msg == "祖父母 or 外祖父母":
             machine.mothers_grandparent()
             Msg.mothers_grandparent(line_bot_api, event)
+            Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
     elif machine.state == "父親的父母":
-        machine.go_menu()
-        tpl.menu(line_bot_api, event) 
+        if msg == "q":
+            machine.go_menu()
+            tpl.menu(line_bot_api, event)
+        else:
+            try:
+                num = int(msg)
+                if msg > 0:
+                    income_record[machine.state] += num
+                else:
+                    expense_record[machine.state] += num
+            except:
+               Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state) 
     elif machine.state == "父親的兄弟姊妹":
-        machine.go_menu()
-        tpl.menu(line_bot_api, event)
+        if msg == "q":
+            machine.go_menu()
+            tpl.menu(line_bot_api, event)
+        else:
+            try:
+                num = int(msg)
+                if msg > 0:
+                    income_record[machine.state] += num
+                else:
+                    expense_record[machine.state] += num
+            except:
+               Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
     elif machine.state == "父親的姪男/女、甥男/女":
-        machine.go_menu()
-        tpl.menu(line_bot_api, event)
+        if msg == "q":
+            machine.go_menu()
+            tpl.menu(line_bot_api, event)
+        else:
+            try:
+                num = int(msg)
+                if msg > 0:
+                    income_record[machine.state] += num
+                else:
+                    expense_record[machine.state] += num
+            except:
+               Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
     elif machine.state == "父親的祖父母、外祖父母":
-        machine.go_menu()
-        tpl.menu(line_bot_api, event)
+        if msg == "q":
+            machine.go_menu()
+            tpl.menu(line_bot_api, event)
+        else:
+            try:
+                num = int(msg)
+                if msg > 0:
+                    income_record[machine.state] += num
+                else:
+                    expense_record[machine.state] += num
+            except:
+               Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
     elif machine.state == "母親的父母":
-        machine.go_menu()
-        tpl.menu(line_bot_api, event) 
+        if msg == "q":
+            machine.go_menu()
+            tpl.menu(line_bot_api, event) 
+        else:
+            try:
+                num = int(msg)
+                if msg > 0:
+                    income_record[machine.state] += num
+                else:
+                    expense_record[machine.state] += num
+            except:
+               Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
     elif machine.state == "母親的兄弟姊妹":
-        machine.go_menu()
-        tpl.menu(line_bot_api, event)
+        if msg == "q":
+            machine.go_menu()
+            tpl.menu(line_bot_api, event)
+        else:
+            try:
+                num = int(msg)
+                if msg > 0:
+                    income_record[machine.state] += num
+                else:
+                    expense_record[machine.state] += num
+            except:
+               Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
     elif machine.state == "母親的姪男/女、甥男/女":
-        machine.go_menu()
-        tpl.menu(line_bot_api, event)
+        if msg == "q":
+            machine.go_menu()
+            tpl.menu(line_bot_api, event)
+        else:
+            try:
+                num = int(msg)
+                if msg > 0:
+                    income_record[machine.state] += num
+                else:
+                    expense_record[machine.state] += num
+            except:
+               Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
     elif machine.state == "母親的祖父母、外祖父母":
-        machine.go_menu()
-        tpl.menu(line_bot_api, event)
+        if msg == "q":
+            machine.go_menu()
+            tpl.menu(line_bot_api, event)
+        else:
+            try:
+                num = int(msg)
+                if msg > 0:
+                    income_record[machine.state] += num
+                else:
+                    expense_record[machine.state] += num
+            except:
+               Msg.show_state_money(line_bot_api, event, income_record, expense_record, machine.state)
      
 @app.route("/webhook", methods=["POST"])
 def webhook_handler():
