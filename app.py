@@ -19,6 +19,10 @@ import state_and_transition as sat
 load_dotenv()
 
 machine_dict = {}
+try:
+    os.mkdir("user_data")
+except:
+    pass
 def create_machine():
     return TocMachine(
     states=sat.state_system + sat.state_fathers_family + sat.state_mothers_family,# + state_sons_family + state_daughters_family,
@@ -84,7 +88,7 @@ def handle_message(event):
     uid = event.source.user_id
     if uid not in machine_dict.keys():
         family = ["祖父", "祖母", '伯父', '叔父', '姑母', '堂兄弟姐妹', '(姑)表兄弟姐妹',
-                         '舅父', '姨母', '外祖父', '外祖母', '(舅)兄弟姐妹', '姨兄弟姐妹']
+                         '舅父', '姨母', '外祖父', '外祖母', '(舅)表兄弟姐妹', '姨兄弟姐妹']
         income_record = dict.fromkeys(family, [])
         expense_record = dict.fromkeys(family, [])
         user_data = {"income_record": income_record, "expense_record": expense_record}

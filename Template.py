@@ -430,8 +430,8 @@ def m_nephews(line_bot_api, event):
                 text='Please select',
                 actions=[
                     MessageAction(
-                        label='(舅)兄弟姐妹(母親的姪男/女)',
-                        text='(舅)兄弟姐妹',
+                        label='(舅)表兄弟姐妹(母親的姪男/女)',
+                        text='(舅)表兄弟姐妹',
                     ),
                     MessageAction(
                         label='姨兄弟姐妹(母親的甥男/女)',

@@ -141,7 +141,7 @@ class TocMachine(GraphMachine):
     def is_going_dothings(self,line_bot_api, event, machine):
         msg = event.message.text
         source_states = ["祖父", "祖母", '伯父', '叔父', '姑母', '堂兄弟姐妹', '(姑)表兄弟姐妹',
-                         '舅父', '姨母', '外祖父', '外祖母', '(舅)兄弟姐妹', '姨兄弟姐妹']
+                         '舅父', '姨母', '外祖父', '外祖母', '(舅)表兄弟姐妹', '姨兄弟姐妹']
         if msg in source_states:
             tpl.dothings(line_bot_api, event, msg)
             return True
