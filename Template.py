@@ -1,7 +1,9 @@
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             TemplateSendMessage, ButtonsTemplate, MessageTemplateAction,
-                            PostbackAction, MessageAction, URIAction)
-
+                            PostbackAction, MessageAction, URIAction, ImageSendMessage, ConfirmTemplate, CarouselTemplate, CarouselColumn)
+import urllib
+import re
+import random
 
 def menu(line_bot_api, event):
     line_bot_api.reply_message(
@@ -10,9 +12,9 @@ def menu(line_bot_api, event):
         TemplateSendMessage(
             alt_text='Buttons template',
             template=ButtonsTemplate(
-                # thumbnail_image_url='https://example.com/image.jpg',
+                thumbnail_image_url='https://lh3.googleusercontent.com/proxy/YyRPaDhpvXqBSV0JAYpofUAyPfFVVafTRhNC31akWltJjrCPJTvLZAugbCNO5o2Dusfvy1OtZ6gNgpdCRWTftoceEvvDy7oE_Vc0Z9pW1q8',
                 title='Menu',
-                text='Please select',
+                text='歡迎使用我打造的過年實用工具\nPlease select',
                 actions=[
                     # PostbackAction(
                     #     label='postback',
@@ -20,26 +22,104 @@ def menu(line_bot_api, event):
                     #     data='action=buy&itemid=1'
                     # ),
                     MessageAction(
-                        label='親戚稱謂查詢&紅包紀錄',
-                        text='親戚稱謂查詢&紅包紀錄'
+                        label='親戚稱謂查詢&紅包收發',
+                        text='親戚稱謂查詢&紅包收發'
                     ),
                     MessageAction(
                         label='紅包規劃',
                         text='紅包規劃'
                     ),
-                    # MessageAction(
-                    #     label='新年訊息',
-                    #     text='新年訊息'
-                    # ),
-                    URIAction(
+                    MessageAction(
+                        label='拜年長輩圖',
+                        text='拜年長輩圖'
+                    ),
+                    MessageAction(
                         label='Document',
-                        uri='https://c5e4-111-254-58-230.ngrok.io/show-fsm'
+                        text='Document'
                     )
                 ]
             )
         )
     )
+
+def doc(line_bot_api, event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                thumbnail_image_url='https://p2.bahamut.com.tw/HOME/creationCover/56/0004385956_B.PNG',
+                title='Repository or transition graph?',
+                text='Please select',
+                actions=[
+                    URIAction(
+                        label='Repository',
+                        uri='https://github.com/tc-huang/TOC-Project-2021'
+                    ),
+                    URIAction(
+                        label='Transition graph',
+                        uri='https://fsm-line-bot.herokuapp.com//show-fsm'
+                    ),
+                    MessageAction(
+                        label='回主選單',
+                        text='回主選單'
+                    ),
+                ]
+            )
+        )
+    )
+
+def image(line_bot_api, event):
+    text = "顯示隨機三張年長輩圖"
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=text))
+    img_list = []
+
+    img_search = {'tbm': 'isch', 'q': "新年+長輩圖"}#event.message.text}
+    query = urllib.parse.urlencode(img_search)
+    base  = "https://www.google.com/search?"
+    url   = str(base+query)
+
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
+
+    res  = urllib.request.Request(url, headers=headers)
+    con  = urllib.request.urlopen(res)
+    data = con.read()
+
+    pattern = '"(https://encrypted-tbn0.gstatic.com[\S]*)"'
+
+    for match in re.finditer(pattern, str(data, "utf-8")):
+        if len(match.group(1)) < 150:
+            img_list.append(match.group(1))
     
+    for i in range(3):
+        random_img_url = img_list[random.randint(0, len(img_list)+1-2)]
+        line_bot_api.push_message(
+            event.source.user_id,
+            ImageSendMessage(random_img_url, random_img_url
+            ))
+    
+    line_bot_api.push_message(
+            event.source.user_id,
+            TemplateSendMessage(
+                alt_text='Confirm template',
+                template=ConfirmTemplate(
+                    text='再三張 or 回主選單',
+                    actions=[
+                        MessageAction(
+                            label='再三張',
+                            text='再三張'
+                        ),
+                        MessageAction(
+                            label='回主選單',
+                            text='回主選單'
+                        )
+                    ]
+                )
+            )
+        )
+
 def money(line_bot_api, event):
     line_bot_api.reply_message(
         event.reply_token,
@@ -74,30 +154,51 @@ def relation(line_bot_api, event):
     line_bot_api.reply_message(
         event.reply_token,
         TemplateSendMessage(
-            alt_text='Buttons template',
-            template=ButtonsTemplate(
-                title='親戚稱謂查詢',
-                text='Please select (Enter q for showing family graph!)',
-                actions=[
-                    MessageAction(
-                        label='爸爸的',
-                        text='爸爸的'
+            alt_text='Carousel template',
+            template=CarouselTemplate(
+                columns=[
+                    CarouselColumn(
+                        # thumbnail_image_url='https://example.com/item1.jpg',
+                        title='親戚稱謂查詢 & 紅包收發紀錄',
+                        text='Please select',
+                        actions=[
+                            MessageAction(
+                                label='爸爸的親戚(含)',
+                                text='爸爸的親戚'
+                            ),
+                            MessageAction(
+                                label='媽媽的親戚(含)',
+                                text='媽媽的親戚'
+                            ),
+                            MessageAction(
+                                label='回主選單',
+                                text='回主選單'
+                            )
+                        ]
                     ),
-                    MessageAction(
-                        label='媽媽的',
-                        text='媽媽的'
-                    ),
-                    # MessageAction(
-                    #     label='兒子的',
-                    #     text='兒子的'
-                    # ),
-                    # MessageAction(
-                    #     label='女兒的',
-                    #     text='女兒的'
-                    # ),
+                    CarouselColumn(
+                        # thumbnail_image_url='https://example.com/item2.jpg',
+                        title='親戚稱謂查詢 & 紅包收發紀錄',
+                        text='Please select',
+                        actions=[
+                            MessageAction(
+                                label='老公的親戚(含)',
+                                text='老公的親戚'
+                            ),
+                            MessageAction(
+                                label='老婆的親戚(含)',
+                                text='媽媽的親戚'
+                            ),
+                                MessageAction(
+                                label='朋友相關（記帳）',
+                                text='朋友相關'
+                            ),
+                        ]
+                    )
                 ]
             )
         )
+        
     )
 
 def fathers_family(line_bot_api, event):
@@ -107,7 +208,7 @@ def fathers_family(line_bot_api, event):
             alt_text='Buttons template',
             template=ButtonsTemplate(
                 title='你父親的',
-                text='Please select (Enter q for showing family graph!)',
+                text='Please select (輸入其他鍵回主選單)',
                 actions=[
                     MessageAction(
                         label='父母',
@@ -115,51 +216,124 @@ def fathers_family(line_bot_api, event):
                     ),
                     MessageAction(
                         label='兄弟姊妹',
-                        text='兄弟姐妹'
+                        text='兄弟姊妹'
                     ),
                     MessageAction(
                         label='姪男/女 or 甥男/女',
                         text='姪男/女 or 甥男/女'
                     ),
-                    MessageAction(
-                        label='祖父母 or 外祖父母',
-                        text='祖父母 or 外祖父母'
-                    ),
+                    # MessageAction(
+                    #     label='祖父母 or 外祖父母',
+                    #     text='祖父母 or 外祖父母'
+                    # ),
                 ]
             )
         )
     )
-    
-def fathers_family_L2(line_bot_api, event):
+def f_parents(line_bot_api, event):
     line_bot_api.reply_message(
         event.reply_token,
         TemplateSendMessage(
             alt_text='Buttons template',
             template=ButtonsTemplate(
-                title='你父親的',
-                text='Please select (Enter q for showing family graph!)',
+                title='你父親的父母',
+                text='Please select',
                 actions=[
                     MessageAction(
-                        label='哥哥',
-                        text='哥哥',
+                        label='祖父(爺爺)',
+                        text='祖父',
                     ),
                     MessageAction(
-                        label='弟弟',
-                        text='弟弟'
+                        label='祖母(奶奶)',
+                        text='祖母'
                     ),
                     MessageAction(
-                        label='姊姊',
-                        text='姊姊'
+                        label='其他成員',
+                        text='其他成員'
                     ),
                     MessageAction(
-                        label='妹妹',
-                        text='妹妹'
+                        label='回主選單',
+                        text='回主選單'
                     ),
                 ]
             )
         )
     )
-    
+def f_sibling(line_bot_api, event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                title='你父親的兄弟姊妹',
+                text='Please select',
+                actions=[
+                    MessageAction(
+                        label='伯父（父親的哥哥）',
+                        text='伯父',
+                    ),
+                    MessageAction(
+                        label='叔父（父親的弟弟）',
+                        text='叔父'
+                    ),
+                    MessageAction(
+                        label='姑母（父親的姊妹）',
+                        text='姑母'
+                    ),
+                ]
+            )
+        )
+    )
+def f_nephews(line_bot_api, event):
+   line_bot_api.reply_message(
+        event.reply_token,
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                title='你父親的姪男/女 or 甥男/女',
+                text='Please select',
+                actions=[
+                    MessageAction(
+                        label='堂兄弟姐妹(父親的姪男/女)',
+                        text='堂兄弟姐妹',
+                    ),
+                    MessageAction(
+                        label='(姑)表兄弟姐妹(父親的甥男/女)',
+                        text='(姑)表兄弟姐妹'
+                    ),
+                ]
+            )
+        )
+    ) 
+def dothings(line_bot_api, event):
+   line_bot_api.reply_message(
+        event.reply_token,
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                title='功能',
+                text='Please select',
+                actions=[
+                    MessageAction(
+                        label='收紅包',
+                        text='收紅包',
+                    ),
+                    MessageAction(
+                        label='包紅包',
+                        text='包紅包'
+                    ),
+                    MessageAction(
+                        label='產生賀年貼圖/吉祥話',
+                        text='產生賀年貼圖/吉祥話'
+                    ),
+                    MessageAction(
+                        label='回主選單',
+                        text='回主選單'
+                    ),
+                ]
+            )
+        )
+    ) 
 
 def mothers_family(line_bot_api, event):
     line_bot_api.reply_message(
@@ -168,7 +342,7 @@ def mothers_family(line_bot_api, event):
             alt_text='Buttons template',
             template=ButtonsTemplate(
                 title='你母親的',
-                text='Please select (Enter q for showing family graph!)',
+                text='Please select',
                 actions=[
                     MessageAction(
                         label='父母',
@@ -182,44 +356,86 @@ def mothers_family(line_bot_api, event):
                         label='姪男/女 or 甥男/女',
                         text='姪男/女 or 甥男/女'
                     ),
-                    MessageAction(
-                        label='祖父母 or 外祖父母',
-                        text='祖父母 or 外祖父母'
-                    ),
+                    # MessageAction(
+                    #     label='祖父母 or 外祖父母',
+                    #     text='祖父母 or 外祖父母'
+                    # ),
                 ]
             )
         )
     )
-def mothers_family_L2(line_bot_api, event):
+def m_parents(line_bot_api, event):
+   line_bot_api.reply_message(
+        event.reply_token,
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                title='你母親的父母',
+                text='Please select',
+                actions=[
+                    MessageAction(
+                        label='外祖父(外公)',
+                        text='外祖父',
+                    ),
+                    MessageAction(
+                        label='外祖母(外婆)',
+                        text='外祖母'
+                    ),
+                    MessageAction(
+                        label='其他成員',
+                        text='其他成員'
+                    ),
+                    MessageAction(
+                        label='回主選單',
+                        text='回主選單'
+                    ),
+                ]
+            )
+        )
+    ) 
+def m_sibling(line_bot_api, event):
     line_bot_api.reply_message(
         event.reply_token,
         TemplateSendMessage(
             alt_text='Buttons template',
             template=ButtonsTemplate(
-                title='你母親的',
-                text='Please select (Enter q for showing family graph!)',
+                title='你母親的兄弟姐妹',
+                text='Please select',
                 actions=[
                     MessageAction(
-                        label='哥哥',
-                        text='哥哥',
+                        label='舅父（母親的哥哥）',
+                        text='舅父',
                     ),
                     MessageAction(
-                        label='弟弟',
-                        text='弟弟'
+                        label='姨母（母親的姐妹）',
+                        text='姨母'
                     ),
-                    MessageAction(
-                        label='姊姊',
-                        text='姊姊'
-                    ),
-                    MessageAction(
-                        label='妹妹',
-                        text='妹妹'
-                    ),
+
                 ]
             )
         )
     )
- 
+def m_nephews(line_bot_api, event):
+     line_bot_api.reply_message(
+        event.reply_token,
+        TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                title='你母親的姪男/女 or 甥男/女',
+                text='Please select',
+                actions=[
+                    MessageAction(
+                        label='(舅)兄弟姐妹(母親的姪男/女)',
+                        text='(舅)兄弟姐妹',
+                    ),
+                    MessageAction(
+                        label='姨兄弟姐妹(母親的甥男/女)',
+                        text='姨兄弟姐妹'
+                    ),
+                ]
+            )
+        )
+    ) 
 # def sons_family(line_bot_api, event):
 #     line_bot_api.reply_message(
 #         event.reply_token,
