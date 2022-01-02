@@ -127,6 +127,7 @@ def money(line_bot_api, event):
         TemplateSendMessage(
             alt_text='Buttons template',
             template=ButtonsTemplate(
+                thumbnail_image_url='https://sw.cool3c.com/user/100672/2021/df197045-65a2-4d01-a947-ddf44006c54c.jpg?fit=max&w=1400&q=80'
                 title='紅包規劃',
                 text='Please select',
                 actions=[
