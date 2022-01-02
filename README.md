@@ -29,7 +29,6 @@
 ## FSM graph
 ![FSM graph](fsm.png)
 
-
 ## Reference
 [Line Bot Python SDK](https://github.com/line/line-bot-sdk-python)
 

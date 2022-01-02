@@ -58,7 +58,7 @@ def doc(line_bot_api, event):
                     ),
                     URIAction(
                         label='Transition graph',
-                        uri='https://fsm-line-bot.herokuapp.com//show-fsm'
+                        uri='https://fsm-line-bot.herokuapp.com/show-fsm'
                     ),
                     MessageAction(
                         label='回主選單',
