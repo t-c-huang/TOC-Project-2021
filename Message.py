@@ -1,7 +1,7 @@
 from linebot.models import (MessageEvent, TextMessage, TextSendMessage,
                             TemplateSendMessage, ButtonsTemplate, MessageTemplateAction,
                             PostbackAction, MessageAction, URIAction)
-
+import json
 # line_bot_api.reply_message(
 #         event.reply_token,
 #         TextSendMessage(text=event.message.text))
@@ -75,16 +75,22 @@ def mothers_grandparent(line_bot_api, event):
         event.reply_token,
         TextSendMessage(text=text))
     
-def show_income(line_bot_api, event, income_record):
-    text = f"收入 NTD {sum(income_record.values())}\n\
-            （傳送任意鍵回選單）"
+def show_income(line_bot_api, event):
+    uid = event.source.user_id
+    text = ""
+    with open(f"user_data/{uid}.json", "r", encoding='utf8') as f:
+        user_data = json.load(f)
+        text = "紅包收入：\n" + str(user_data['income_record']).replace('{', '').replace('}', '').replace('],', ',\n').replace('[', '').replace('\'', '')
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=text))
 
-def show_expense(line_bot_api, event, expense_record):
-    text = f"支出 NTD {sum(expense_record.values())}\n\
-            （傳送任意鍵回選單）"
+def show_expense(line_bot_api, event):
+    uid = event.source.user_id
+    text = ""
+    with open(f"user_data/{uid}.json", "r", encoding='utf8') as f:
+        user_data = json.load(f)
+        text = "紅包支出：\n" + str(user_data['expense_record']).replace('{', '').replace('}', '').replace('],', ',\n').replace('[', '').replace('\'', '')
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=text))
@@ -101,3 +107,15 @@ def show_state_money(line_bot_api, event, income_record, expense_record, state):
         TextSendMessage(text=text))
     print(income_record)
     print(expense_record)
+    
+def how_much_receive(line_bot_api, event):
+    text = f"輸入正整數數字表示收到的紅包金額"
+    line_bot_api.push_message(
+        event.source.user_id,
+        TextSendMessage(text=text))
+    
+def how_much_spend(line_bot_api, event):
+    text = f"輸入正整數數字表示支出的紅包金額"
+    line_bot_api.push_message(
+        event.source.user_id,
+        TextSendMessage(text=text))

@@ -78,7 +78,7 @@ transition_mothers_family = [
 #     {"trigger": "父母","source": "女婿","dest": "親家公/親家母"}, 
 # ]
 
-state_system = ["begin", "menu", "relation", "money", "income", "expense", "image", "document", "dothings"]
+state_system = ["begin", "menu", "relation", "money", "income", "expense", "image", "document", "dothings", "earn", "speend"]
 
 transition_system = [
     {"trigger": "advance","source": "begin","dest": "menu", "conditions": "is_going_menu"},
@@ -92,9 +92,14 @@ transition_system = [
     {"trigger": "advance","source": "document","dest": "menu", "conditions": "is_back_menu"},
     {"trigger": "advance","source": "image","dest": "image", "conditions": "more_image"},
     {"trigger": "advance","source": "dothings","dest": "menu", "conditions": "is_going_menu"},
+    {"trigger": "advance","source": "dothings","dest": "earn", "conditions": "is_going_earn"},
+    {"trigger": "advance","source": "dothings","dest": "speend", "conditions": "is_going_pay"},
+    {"trigger": "advance","source": "dothings","dest": "image", "conditions": "is_going_image"},
+    {"trigger": "advance","source": "earn","dest": "money", "conditions": "update_earn"},
+    {"trigger": "advance","source": "speend","dest": "money", "conditions": "update_speend"},
     # {"trigger": "go_menu","source": "document","dest": "menu"},
-    # {"trigger": "income","source": "money","dest": "income"},
-    # {"trigger": "expense","source": "money","dest": "expense"},
+    {"trigger": "advance","source": "money","dest": "income", "conditions": "is_going_income"},
+    {"trigger": "advance","source": "money","dest": "expense", "conditions": "is_going_expense"},
     # {"trigger": "back","source": state_fathers_family,"dest": "relation"},
     # {"trigger": "back","source": state_mothers_family,"dest": "relation"},
     # {"trigger": "back","source": state_sons_family,"dest": "relation"},

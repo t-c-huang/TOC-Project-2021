@@ -3,6 +3,8 @@ from utils import send_text_message
 import Template as tpl
 import Message as Msg
 import state_and_transition as sat
+import json
+
 
 class TocMachine(GraphMachine):
     def __init__(self, **machine_configs):
@@ -29,16 +31,31 @@ class TocMachine(GraphMachine):
     
     def is_going_money(self,line_bot_api, event, machine):
         msg = event.message.text
-        if msg == "紅包規劃":
+        if msg == "紅包管理":
             # machine.go_money()
-            tpl.money(self,line_bot_api, event)
+            tpl.money(line_bot_api, event)
             return True
         return False
     
+    def is_going_income(self, line_bot_api, event, machine):
+        msg = event.message.text
+        if msg =="查看收入":
+            Msg.show_income(line_bot_api, event)
+            return True
+        return False
+    
+    def is_going_expense(self, line_bot_api, event, machine):
+        msg = event.message.text
+        if msg == "查看支出":
+            Msg.show_expense(line_bot_api, event)
+            return True
+        return False
+    
+    
+    
     def is_going_image(self,line_bot_api, event, machine):
         msg = event.message.text
-        if msg == "拜年長輩圖":
-            # machine.go_image()
+        if msg =="產生賀年貼圖":
             tpl.image(line_bot_api, event)
             return True
         return False
@@ -123,12 +140,58 @@ class TocMachine(GraphMachine):
 
     def is_going_dothings(self,line_bot_api, event, machine):
         msg = event.message.text
-        source_states = ["祖父", "祖母", '伯父', '叔父', '姑母', '堂兄弟姐妹', '(姑)表兄弟姐妹', '舅父', '姨母', '外祖父', '外祖母', '(舅)兄弟姐妹', '姨兄弟姐妹']
+        source_states = ["祖父", "祖母", '伯父', '叔父', '姑母', '堂兄弟姐妹', '(姑)表兄弟姐妹',
+                         '舅父', '姨母', '外祖父', '外祖母', '(舅)兄弟姐妹', '姨兄弟姐妹']
         if msg in source_states:
-            tpl.dothings(line_bot_api, event)
+            tpl.dothings(line_bot_api, event, msg)
             return True
         return False
     
+    def is_going_earn(self, line_bot_api, event, machine):
+        msg = event.message.text
+        if msg == "收紅包":
+            Msg.how_much_receive(line_bot_api, event)
+            return True
+        return False
+    
+    def is_going_pay(self, line_bot_api, event, machine):
+        msg = event.message.text
+        if msg == "包紅包":
+            Msg.how_much_spend(line_bot_api, event)
+            return True
+        return False
+    
+    def update_earn(self, line_bot_api, event, machine):
+        msg = event.message.text
+        try:
+            num = int(msg)
+        except:
+            return False
+        uid = event.source.user_id
+        from Template import who_dict
+        with open(f"user_data/{uid}.json", "r", encoding='utf8') as f:
+            user_data = json.load(f)
+            user_data['income_record'][who_dict[uid]].append(num)
+        with open(f"user_data/{uid}.json", "w", encoding='utf8') as f:  
+            json.dump(user_data, f, ensure_ascii=False)
+        tpl.money(line_bot_api, event)
+        return True
+    
+    def update_speend(self, line_bot_api, event, machine):
+        msg = event.message.text
+        try:
+            num = int(msg)
+        except:
+            return False
+        uid = event.source.user_id
+        from Template import who_dict
+        with open(f"user_data/{uid}.json", "r", encoding='utf8') as f:
+            user_data = json.load(f)
+            user_data['expense_record'][who_dict[uid]].append(num)
+        with open(f"user_data/{uid}.json", "w", encoding='utf8') as f: 
+            json.dump(user_data, f, ensure_ascii=False)
+            tpl.money(line_bot_api, event)
+        return True
     # def is_going_to_state1(self, event):
     #     text = event.message.text
     #     return text.lower() == "go to state1"

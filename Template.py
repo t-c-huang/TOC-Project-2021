@@ -26,12 +26,12 @@ def menu(line_bot_api, event):
                         text='親戚稱謂查詢&紅包收發'
                     ),
                     MessageAction(
-                        label='紅包規劃',
-                        text='紅包規劃'
+                        label='紅包管理',
+                        text='紅包管理'
                     ),
                     MessageAction(
-                        label='拜年長輩圖',
-                        text='拜年長輩圖'
+                        label='產生賀年貼圖',
+                        text='產生賀年貼圖'
                     ),
                     MessageAction(
                         label='Document',
@@ -70,7 +70,8 @@ def doc(line_bot_api, event):
     )
 
 def image(line_bot_api, event):
-    text = "顯示隨機三張年長輩圖"
+    text = "顯示隨機三張年長輩圖\n\
+            看到看到喜歡的就轉傳吧"
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=text))
@@ -129,14 +130,14 @@ def money(line_bot_api, event):
                 title='紅包規劃',
                 text='Please select',
                 actions=[
-                    MessageAction(
-                        label='紅包收入',
-                        text='紅包收入'
-                    ),
-                    MessageAction(
-                        label='紅包支出',
-                        text='紅包支出'
-                    ),
+                    # MessageAction(
+                    #     label='紅包收入',
+                    #     text='紅包收入'
+                    # ),
+                    # MessageAction(
+                    #     label='紅包支出',
+                    #     text='紅包支出'
+                    # ),
                     MessageAction(
                         label='查看收入',
                         text='查看收入'
@@ -176,25 +177,25 @@ def relation(line_bot_api, event):
                             )
                         ]
                     ),
-                    CarouselColumn(
-                        # thumbnail_image_url='https://example.com/item2.jpg',
-                        title='親戚稱謂查詢 & 紅包收發紀錄',
-                        text='Please select',
-                        actions=[
-                            MessageAction(
-                                label='老公的親戚(含)',
-                                text='老公的親戚'
-                            ),
-                            MessageAction(
-                                label='老婆的親戚(含)',
-                                text='媽媽的親戚'
-                            ),
-                                MessageAction(
-                                label='朋友相關（記帳）',
-                                text='朋友相關'
-                            ),
-                        ]
-                    )
+                    # CarouselColumn(
+                    #     # thumbnail_image_url='https://example.com/item2.jpg',
+                    #     title='親戚稱謂查詢 & 紅包收發紀錄',
+                    #     text='Please select',
+                    #     actions=[
+                    #         MessageAction(
+                    #             label='老公的親戚(含)',
+                    #             text='老公的親戚'
+                    #         ),
+                    #         MessageAction(
+                    #             label='老婆的親戚(含)',
+                    #             text='媽媽的親戚'
+                    #         ),
+                    #             MessageAction(
+                    #             label='朋友相關（記帳）',
+                    #             text='朋友相關'
+                    #         ),
+                    #     ]
+                    # )
                 ]
             )
         )
@@ -247,14 +248,14 @@ def f_parents(line_bot_api, event):
                         label='祖母(奶奶)',
                         text='祖母'
                     ),
-                    MessageAction(
-                        label='其他成員',
-                        text='其他成員'
-                    ),
-                    MessageAction(
-                        label='回主選單',
-                        text='回主選單'
-                    ),
+                    # MessageAction(
+                    #     label='其他成員',
+                    #     text='其他成員'
+                    # ),
+                    # MessageAction(
+                    #     label='回主選單',
+                    #     text='回主選單'
+                    # ),
                 ]
             )
         )
@@ -305,13 +306,17 @@ def f_nephews(line_bot_api, event):
             )
         )
     ) 
-def dothings(line_bot_api, event):
-   line_bot_api.reply_message(
+who_dict = {}
+def dothings(line_bot_api, event, msg):
+    global who_dict
+    uid = event.source.user_id
+    who_dict[uid] = msg
+    line_bot_api.reply_message(
         event.reply_token,
         TemplateSendMessage(
             alt_text='Buttons template',
             template=ButtonsTemplate(
-                title='功能',
+                title=f"{msg} - 紅包收發紀錄 ＆ 賀年貼圖",
                 text='Please select',
                 actions=[
                     MessageAction(
@@ -323,8 +328,8 @@ def dothings(line_bot_api, event):
                         text='包紅包'
                     ),
                     MessageAction(
-                        label='產生賀年貼圖/吉祥話',
-                        text='產生賀年貼圖/吉祥話'
+                        label='產生賀年貼圖',
+                        text='產生賀年貼圖'
                     ),
                     MessageAction(
                         label='回主選單',
@@ -381,14 +386,14 @@ def m_parents(line_bot_api, event):
                         label='外祖母(外婆)',
                         text='外祖母'
                     ),
-                    MessageAction(
-                        label='其他成員',
-                        text='其他成員'
-                    ),
-                    MessageAction(
-                        label='回主選單',
-                        text='回主選單'
-                    ),
+                    # MessageAction(
+                    #     label='其他成員',
+                    #     text='其他成員'
+                    # ),
+                    # MessageAction(
+                    #     label='回主選單',
+                    #     text='回主選單'
+                    # ),
                 ]
             )
         )
