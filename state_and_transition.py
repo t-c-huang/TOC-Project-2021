@@ -100,6 +100,12 @@ transition_system = [
     # {"trigger": "go_menu","source": "document","dest": "menu"},
     {"trigger": "advance","source": "money","dest": "income", "conditions": "is_going_income"},
     {"trigger": "advance","source": "money","dest": "expense", "conditions": "is_going_expense"},
+    {"trigger": "advance","source": "money","dest": "menu", "conditions": "is_going_menu"},
+    {"trigger": "advance","source": "income","dest": "money", "conditions": "is_going_money"},
+    {"trigger": "advance","source": "expense","dest": "money", "conditions": "is_going_money"},
+    {"trigger": "advance","source": "income","dest": "menu", "conditions": "is_going_menu"},
+    {"trigger": "advance","source": "expense","dest": "menu", "conditions": "is_going_menu"},
+    
     # {"trigger": "back","source": state_fathers_family,"dest": "relation"},
     # {"trigger": "back","source": state_mothers_family,"dest": "relation"},
     # {"trigger": "back","source": state_sons_family,"dest": "relation"},

@@ -20,6 +20,21 @@ class TocMachine(GraphMachine):
             if msg == "回主選單":
                 tpl.menu(line_bot_api, event)
                 return True
+        elif machine.state == "money":
+            msg = event.message.text
+            if msg == "回主選單":
+                tpl.menu(line_bot_api, event)
+                return True
+        elif machine.state == "income":
+            msg = event.message.text
+            if msg == "回主選單":
+                tpl.menu(line_bot_api, event)
+                return True
+        elif machine.state == "expense":
+            msg = event.message.text
+            if msg == "回主選單":
+                tpl.menu(line_bot_api, event)
+                return True
         return False
     def is_going_relation(self,line_bot_api, event, machine):
         msg = event.message.text
@@ -35,12 +50,16 @@ class TocMachine(GraphMachine):
             # machine.go_money()
             tpl.money(line_bot_api, event)
             return True
+        if msg == "回上頁":
+            tpl.money(line_bot_api, event)
+            return True
         return False
     
     def is_going_income(self, line_bot_api, event, machine):
         msg = event.message.text
         if msg =="查看收入":
             Msg.show_income(line_bot_api, event)
+            tpl.check_in_money(line_bot_api, event)
             return True
         return False
     
@@ -48,6 +67,7 @@ class TocMachine(GraphMachine):
         msg = event.message.text
         if msg == "查看支出":
             Msg.show_expense(line_bot_api, event)
+            tpl.check_in_money(line_bot_api, event)
             return True
         return False
     

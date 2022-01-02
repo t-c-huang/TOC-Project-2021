@@ -134,10 +134,6 @@ def money(line_bot_api, event):
                     #     label='紅包收入',
                     #     text='紅包收入'
                     # ),
-                    # MessageAction(
-                    #     label='紅包支出',
-                    #     text='紅包支出'
-                    # ),
                     MessageAction(
                         label='查看收入',
                         text='查看收入'
@@ -145,6 +141,10 @@ def money(line_bot_api, event):
                     MessageAction(
                         label='查看支出',
                         text='查看支出'
+                    ),
+                    MessageAction(
+                        label='回主選單',
+                        text='回主選單'
                     ),
                 ]
             )
@@ -440,7 +440,28 @@ def m_nephews(line_bot_api, event):
                 ]
             )
         )
-    ) 
+    )
+     
+def check_in_money(line_bot_api, event):
+     line_bot_api.push_message(
+            event.source.user_id,
+            TemplateSendMessage(
+                alt_text='Confirm template',
+                template=ConfirmTemplate(
+                    text='回上頁 or 回主選單',
+                    actions=[
+                        MessageAction(
+                            label='回上頁',
+                            text='回上頁'
+                        ),
+                        MessageAction(
+                            label='回主選單',
+                            text='回主選單'
+                        )
+                    ]
+                )
+            )
+        )
 # def sons_family(line_bot_api, event):
 #     line_bot_api.reply_message(
 #         event.reply_token,
