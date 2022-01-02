@@ -81,6 +81,11 @@ def show_income(line_bot_api, event):
     with open(f"user_data/{uid}.json", "r", encoding='utf8') as f:
         user_data = json.load(f)
         text = "紅包收入：\n\n" + str(user_data['income_record']).replace('{', '').replace('}', '').replace('],', ',\n').replace('[', '').replace('\'', '').replace("]", "")
+        s = 0
+        for l in user_data['income_record'].values():
+            if len(l) > 0:
+                s += sum(l)
+        text += f"\n\n總收入：{s} 元" 
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=text))
@@ -91,6 +96,13 @@ def show_expense(line_bot_api, event):
     with open(f"user_data/{uid}.json", "r", encoding='utf8') as f:
         user_data = json.load(f)
         text = "紅包支出：\n\n" + str(user_data['expense_record']).replace('{', '').replace('}', '').replace('],', ',\n').replace('[', '').replace('\'', '').replace("]", "")
+        s = 0
+        for l in user_data['expense_record'].values():
+            if len(l) > 0:
+                s += sum(l)
+        text += f"\n\n總支出： {s}元"
+    
+    
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=text))
